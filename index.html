@@ -1,8 +1,7 @@
 <!--
 ========================================================
 APP: ZODIACO
-VERSIONE: 4.1 - FIX FUNZIONE CALCOLO + GLIFI
-Data/Ora intervento: 2026-06-22
+VERSIONE: 4.1 - DARK THEME ONLY
 ========================================================
 -->
 
@@ -21,7 +20,8 @@ html, body {
     height: 100%;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
-    background: #f4f4f6;
+    background: #0f172a; /* DARK */
+    color: #e2e8f0;
 }
 
 .wrapper {
@@ -36,16 +36,16 @@ html, body {
 .card {
     width: 100%;
     max-width: 420px;
-    background: white;
+    background: #1e293b; /* DARK CARD */
     border-radius: 20px;
     padding: 28px;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
     text-align: center;
 }
 
-h1 { font-size: 28px; margin-bottom: 8px; }
+h1 { font-size: 28px; margin-bottom: 8px; color: #f1f5f9; }
 
-p { font-size: 16px; color: #666; }
+p { font-size: 16px; color: #94a3b8; }
 
 input, select {
     width: 100%;
@@ -55,8 +55,9 @@ input, select {
     padding: 14px;
     margin-top: 12px;
     border-radius: 12px;
-    border: 1px solid #ddd;
-    background: white;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: #e2e8f0;
     text-align: center;
 }
 
@@ -67,8 +68,12 @@ button {
     font-size: 18px;
     border-radius: 12px;
     border: none;
-    background: #111;
+    background: #3b82f6;
     color: white;
+}
+
+button:hover {
+    background: #2563eb;
 }
 
 #risultato {
@@ -82,8 +87,9 @@ button {
     display: inline-block;
     padding: 6px 10px;
     border-radius: 10px;
-    background: #eee;
+    background: #334155;
     font-size: 14px;
+    color: #e2e8f0;
 }
 
 </style>
@@ -174,9 +180,6 @@ else{
 segno="Pesci"; elem="Acqua"; mod="Mobile"; opp="Vergine"; pianeta="Nettuno"; periodo="18 Feb - 20 Mar 2026";
 }
 
-/* =========================
-GLIFI (AGGIUNTA MINIMA)
-========================= */
 const glyph = {
 "Ariete":"♈",
 "Toro":"♉",
