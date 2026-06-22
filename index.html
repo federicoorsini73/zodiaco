@@ -159,35 +159,31 @@ function calcola(){
     let oraInserita = document.getElementById("ora").value;
     let oraVal = oraInserita || "12";
     
-    // Scomposizione sicura per evitare bug di formati sui vari browser
-    let partiData = dataVal.split("-");
-    let annoNum = parseInt(partiData[0], 10);
-    let meseNum = parseInt(partiData[1], 10) - 1; 
-    let giornoNum = parseInt(partiData[2], 10);
-    let oraNum = parseInt(oraVal, 10);
-
-    // Genera l'oggetto Date nativo JavaScript valido
-    let dataLocale = new Date(annoNum, meseNum, giornoNum, oraNum, 0, 0);
+    // Creiamo una data in formato ISO pulita (es. "2026-06-04T12:00:00Z")
+    let dataIsoString = `${dataVal}T${oraVal.padStart(2,'0')}:00:00Z`;
     
-    // Converte la data in un oggetto temporale valido per Astronomy Engine
-    let astronomiaData = Astronomy.MakeTime(dataLocale);
+    // Passiamo direttamente la stringa nativa a Date
+    let dataNativa = new Date(dataIsoString);
     
-    // Calcola la longitudine solare esatta (0-360 gradi) usando la libreria ufficiale
+    // Convertiamo correttamente per la libreria usando l'oggetto Date JS standard
+    let astronomiaData = Astronomy.MakeTime(dataNativa);
+    
+    // Calcolo della longitudine solare esatta (0-360 gradi)
     let coords = Astronomy.EclipticGeoMoon(Astronomy.Body.Sun, astronomiaData);
     let longitudineSolare = coords.elon; 
 
-    // Trova l'indice corretto del segno (0-11)
+    // Trova l'indice del segno (0-11)
     let indexSegno = Math.floor(longitudineSolare / 30);
     
-    // Calcolo della cuspide (se si trova a meno di 1 grado dal cambio segno)
+    // Calcolo della cuspide
     let posizioneNelSegno = longitudineSolare % 30;
     let èCuspide = (posizioneNelSegno < 1.0) || (posizioneNelSegno > 29.0);
 
     let s = infoSegni[indexSegno];
     let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
-    let anno = dataLocale.getFullYear();
+    let anno = dataNativa.getUTCFullYear();
     
-    // Calcolo astronomico esatto del periodo di quell'anno
+    // Calcolo astronomico esatto dei cambi di segno
     let inizioGrado = indexSegno * 30;
     let fineGrado = ((indexSegno + 1) * 30) % 360;
     
@@ -198,13 +194,13 @@ function calcola(){
     let stringaInizio = dataInizio.date.toLocaleDateString('it-IT', opzioniFormato);
     let stringaFine = dataFine.date.toLocaleDateString('it-IT', opzioniFormato);
 
-    // Generazione dei testi di avviso richiesti
+    // Generazione dei testi di avviso
     let testoAvviso = "";
     if (èCuspide) {
         testoAvviso += "<span class='avviso-nota'>⚠️ NB: Questa data si trova in una zona di cuspide (passaggio tra due segni).</span>";
     }
     if (!oraInserita) {
-        testoAvviso += "<span class='avviso-nota'>ℹ️ Ora non inserita: calcolo stimato a metà giornata (ore 12:00). Per le date di transizione l'ora esatta è fondamentale.</span>";
+        testoAvviso += "<span class='avviso-nota'>ℹ️ Ora non inserita: calcolo stimato a metà giornata (ore 12:00 UTC). Per le date di transizione l'ora esatta è fondamentale.</span>";
     }
 
     // Mostra il risultato sulla pagina
