@@ -134,7 +134,7 @@ button:hover {
 
 <script>
 /* ============================================================================
-   MOTORE ASTRONOMICO INTERNO - TOTALMENTE OFFLINE
+   MOTORE ASTRONOMICO INTERNO - 100% OFFLINE
    ============================================================================ */
 const AstroMinimal = {
     getJulianDays: function(date) {
@@ -188,17 +188,14 @@ function calcola(){
     let oraInserita = document.getElementById("ora").value;
     let oraVal = oraInserita || "12";
     
-    // SOLUZIONE ERRORE: Scomponiamo la stringa "AAAA-MM-GG" in numeri puliti
     let partiData = dataVal.split("-");
     let annoNum = parseInt(partiData[0], 10);
-    let meseNum = parseInt(partiData[1], 10) - 1; // I mesi in JS vanno da 0 a 11
+    let meseNum = parseInt(partiData[1], 10) - 1; 
     let giornoNum = parseInt(partiData[2], 10);
     let oraNum = parseInt(oraVal, 10);
 
-    // Genera un oggetto data nativo e sicuro al 100%
     let dataLocale = new Date(annoNum, meseNum, giornoNum, oraNum, 0, 0);
     
-    // Calcolo della longitudine
     let longitudineSolare = AstroMinimal.getSunLongitude(dataLocale); 
 
     let indexSegno = Math.floor(longitudineSolare / 30);
