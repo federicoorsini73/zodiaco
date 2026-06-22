@@ -159,35 +159,30 @@ function calcola(){
     let oraInserita = document.getElementById("ora").value;
     let oraVal = oraInserita || "12";
     
-    // Tagliamo la data in pezzi numerici puri
     let pezzi = dataVal.split("-");
     let a = parseInt(pezzi[0], 10);
     let m = parseInt(pezzi[1], 10) - 1;
     let g = parseInt(pezzi[2], 10);
     let h = parseInt(oraVal, 10);
 
-    // Creiamo l'oggetto data nativo di JavaScript
-    let oggettoData = new Date(Date.UTC(a, m, g, h, 0, 0));
+    // Creiamo la data in millisecondi UTC (un numero puro)
+    let millisecondiUtc = Date.UTC(a, m, g, h, 0, 0);
     
-    // RISOLUZIONE COMPLETA: Passiamo alla libreria l'oggetto data JS standard direttamente
-    let astronomiaData = Astronomy.MakeTime(oggettoData);
+    // CORREZIONE DEFINITIVA: Passiamo l'oggetto Date nativo creato dai millisecondi puliti
+    let astronomiaData = Astronomy.MakeTime(new Date(millisecondiUtc));
     
-    // Calcoliamo i gradi del sole (0-360)
+    // Calcoliamo i gradi del sole
     let coords = Astronomy.EclipticGeoMoon(Astronomy.Body.Sun, astronomiaData);
     let longitudineSolare = coords.elon; 
 
-    // Trova l'indice del segno (0-11)
     let indexSegno = Math.floor(longitudineSolare / 30);
     
-    // Controllo Cuspide (meno di 1 grado di distanza dal cambio)
     let posizioneNelSegno = longitudineSolare % 30;
     let èCuspide = (posizioneNelSegno < 1.0) || (posizioneNelSegno > 29.0);
 
     let s = infoSegni[indexSegno];
     let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
-    let anno = oggettoData.getUTCFullYear();
     
-    // Trova i momenti di inizio e fine
     let inizioGrado = indexSegno * 30;
     let fineGrado = ((indexSegno + 1) * 30) % 360;
     
@@ -206,11 +201,10 @@ function calcola(){
         testoAvviso += "<span class='avviso-nota'>ℹ️ Ora non inserita: calcolo stimato a metà giornata (ore 12:00 UTC). Per le date di transizione l'ora esatta è fondamentale.</span>";
     }
 
-    // Mostra il risultato a video
     document.getElementById("risultato").innerHTML =
     "<div class='badge'>" + s.nome + " " + s.glyph + "</div>" + 
     testoAvviso + "<br><br>" +
-    "<b>Periodo esatto (" + anno + "):</b> dal " + stringaInizio + " al " + stringaFine + "<br>" +
+    "<b>Periodo esatto (" + a + "):</b> dal " + stringaInizio + " al " + stringaFine + "<br>" +
     "<b>Elemento:</b> " + s.elem + "<br>" +
     "<b>Modalità:</b> " + s.mod + "<br>" +
     "<b>Pianeta dominante:</b> " + s.pianeta + "<br>" +
