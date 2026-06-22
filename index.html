@@ -23,7 +23,7 @@
       padding: 30px;
       border-radius: 12px;
       width: 90%;
-      max-width: 360px;
+      max-width: 380px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
 
@@ -58,15 +58,20 @@
 
     .result {
       margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
-      line-height: 1.4;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.6;
     }
 
-    .sign {
+    .badge {
       font-size: 26px;
-      margin-top: 8px;
-      display: block;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    b {
+      color: #93c5fd;
     }
   </style>
 </head>
@@ -80,15 +85,16 @@
 
     <button onclick="calcolaSegno()">Scopri il segno</button>
 
-    <div class="result" id="result"></div>
+    <div class="result" id="risultato"></div>
   </div>
 
   <script>
     function calcolaSegno() {
+
       const date = document.getElementById("birthdate").value;
 
       if (!date) {
-        document.getElementById("result").innerText = "Inserisci una data";
+        document.getElementById("risultato").innerHTML = "Inserisci una data";
         return;
       }
 
@@ -97,49 +103,116 @@
       const mese = d.getMonth() + 1;
 
       let segno = "";
-      let descrizione = "";
+      let periodo = "";
+      let elem = "";
+      let mod = "";
+      let pianeta = "";
+      let opp = "";
 
       if ((mese == 1 && giorno >= 20) || (mese == 2 && giorno <= 18)) {
-        segno = "Acquario"; descrizione = "Indipendente, originale, visionario";
+        segno = "Acquario";
+        periodo = "20 Gennaio - 18 Febbraio";
+        elem = "Aria";
+        mod = "Fisso";
+        pianeta = "Urano / Saturno";
+        opp = "Leone";
       }
       else if ((mese == 2 && giorno >= 19) || (mese == 3 && giorno <= 20)) {
-        segno = "Pesci"; descrizione = "Sensibile, intuitivo, empatico";
+        segno = "Pesci";
+        periodo = "19 Febbraio - 20 Marzo";
+        elem = "Acqua";
+        mod = "Mobile";
+        pianeta = "Nettuno / Giove";
+        opp = "Vergine";
       }
       else if ((mese == 3 && giorno >= 21) || (mese == 4 && giorno <= 19)) {
-        segno = "Ariete"; descrizione = "Energia, impulsività, leadership";
+        segno = "Ariete";
+        periodo = "21 Marzo - 19 Aprile";
+        elem = "Fuoco";
+        mod = "Cardinale";
+        pianeta = "Marte";
+        opp = "Bilancia";
       }
       else if ((mese == 4 && giorno >= 20) || (mese == 5 && giorno <= 20)) {
-        segno = "Toro"; descrizione = "Stabilità, concretezza, pazienza";
+        segno = "Toro";
+        periodo = "20 Aprile - 20 Maggio";
+        elem = "Terra";
+        mod = "Fisso";
+        pianeta = "Venere";
+        opp = "Scorpione";
       }
       else if ((mese == 5 && giorno >= 21) || (mese == 6 && giorno <= 20)) {
-        segno = "Gemelli"; descrizione = "Curioso, comunicativo, versatile";
+        segno = "Gemelli";
+        periodo = "21 Maggio - 20 Giugno";
+        elem = "Aria";
+        mod = "Mobile";
+        pianeta = "Mercurio";
+        opp = "Sagittario";
       }
       else if ((mese == 6 && giorno >= 21) || (mese == 7 && giorno <= 22)) {
-        segno = "Cancro"; descrizione = "Emotivo, protettivo, affettuoso";
+        segno = "Cancro";
+        periodo = "21 Giugno - 22 Luglio";
+        elem = "Acqua";
+        mod = "Cardinale";
+        pianeta = "Luna";
+        opp = "Capricorno";
       }
       else if ((mese == 7 && giorno >= 23) || (mese == 8 && giorno <= 22)) {
-        segno = "Leone"; descrizione = "Carismatico, forte, creativo";
+        segno = "Leone";
+        periodo = "23 Luglio - 22 Agosto";
+        elem = "Fuoco";
+        mod = "Fisso";
+        pianeta = "Sole";
+        opp = "Acquario";
       }
       else if ((mese == 8 && giorno >= 23) || (mese == 9 && giorno <= 22)) {
-        segno = "Vergine"; descrizione = "Preciso, analitico, affidabile";
+        segno = "Vergine";
+        periodo = "23 Agosto - 22 Settembre";
+        elem = "Terra";
+        mod = "Mobile";
+        pianeta = "Mercurio";
+        opp = "Pesci";
       }
       else if ((mese == 9 && giorno >= 23) || (mese == 10 && giorno <= 22)) {
-        segno = "Bilancia"; descrizione = "Equilibrato, sociale, armonioso";
+        segno = "Bilancia";
+        periodo = "23 Settembre - 22 Ottobre";
+        elem = "Aria";
+        mod = "Cardinale";
+        pianeta = "Venere";
+        opp = "Ariete";
       }
       else if ((mese == 10 && giorno >= 23) || (mese == 11 && giorno <= 21)) {
-        segno = "Scorpione"; descrizione = "Intenso, profondo, determinato";
+        segno = "Scorpione";
+        periodo = "23 Ottobre - 21 Novembre";
+        elem = "Acqua";
+        mod = "Fisso";
+        pianeta = "Plutone / Marte";
+        opp = "Toro";
       }
       else if ((mese == 11 && giorno >= 22) || (mese == 12 && giorno <= 21)) {
-        segno = "Sagittario"; descrizione = "Libero, ottimista, avventuroso";
+        segno = "Sagittario";
+        periodo = "22 Novembre - 21 Dicembre";
+        elem = "Fuoco";
+        mod = "Mobile";
+        pianeta = "Giove";
+        opp = "Gemelli";
       }
       else {
-        segno = "Capricorno"; descrizione = "Ambizioso, disciplinato, concreto";
+        segno = "Capricorno";
+        periodo = "22 Dicembre - 19 Gennaio";
+        elem = "Terra";
+        mod = "Cardinale";
+        pianeta = "Saturno";
+        opp = "Cancro";
       }
 
-      document.getElementById("result").innerHTML =
-        "Il tuo segno è:<br>" +
-        "<span class='sign'>" + segno + "</span><br>" +
-        "<div style='font-weight:normal; margin-top:8px'>" + descrizione + "</div>";
+      document.getElementById("risultato").innerHTML =
+        "<div class='badge'>" + segno + "</div><br><br>" +
+        "<b>Periodo:</b> " + periodo + "<br>" +
+        "<b>Elemento:</b> " + elem + "<br>" +
+        "<b>Modalità:</b> " + mod + "<br>" +
+        "<b>Pianeta dominante:</b> " + pianeta + "<br>" +
+        "<b>Segno opposto:</b> " + opp;
     }
   </script>
 
