@@ -159,31 +159,35 @@ function calcola(){
     let oraInserita = document.getElementById("ora").value;
     let oraVal = oraInserita || "12";
     
-    // Creiamo una data in formato ISO pulita (es. "2026-06-04T12:00:00Z")
-    let dataIsoString = `${dataVal}T${oraVal.padStart(2,'0')}:00:00Z`;
+    // Tagliamo la data in pezzi numerici puri
+    let pezzi = dataVal.split("-");
+    let a = parseInt(pezzi[0], 10);
+    let m = parseInt(pezzi[1], 10) - 1;
+    let g = parseInt(pezzi[2], 10);
+    let h = parseInt(oraVal, 10);
+
+    // Creiamo l'oggetto data nativo di JavaScript
+    let oggettoData = new Date(Date.UTC(a, m, g, h, 0, 0));
     
-    // Passiamo direttamente la stringa nativa a Date
-    let dataNativa = new Date(dataIsoString);
+    // RISOLUZIONE COMPLETA: Passiamo alla libreria l'oggetto data JS standard direttamente
+    let astronomiaData = Astronomy.MakeTime(oggettoData);
     
-    // Convertiamo correttamente per la libreria usando l'oggetto Date JS standard
-    let astronomiaData = Astronomy.MakeTime(dataNativa);
-    
-    // Calcolo della longitudine solare esatta (0-360 gradi)
+    // Calcoliamo i gradi del sole (0-360)
     let coords = Astronomy.EclipticGeoMoon(Astronomy.Body.Sun, astronomiaData);
     let longitudineSolare = coords.elon; 
 
     // Trova l'indice del segno (0-11)
     let indexSegno = Math.floor(longitudineSolare / 30);
     
-    // Calcolo della cuspide
+    // Controllo Cuspide (meno di 1 grado di distanza dal cambio)
     let posizioneNelSegno = longitudineSolare % 30;
     let èCuspide = (posizioneNelSegno < 1.0) || (posizioneNelSegno > 29.0);
 
     let s = infoSegni[indexSegno];
     let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
-    let anno = dataNativa.getUTCFullYear();
+    let anno = oggettoData.getUTCFullYear();
     
-    // Calcolo astronomico esatto dei cambi di segno
+    // Trova i momenti di inizio e fine
     let inizioGrado = indexSegno * 30;
     let fineGrado = ((indexSegno + 1) * 30) % 360;
     
@@ -194,7 +198,6 @@ function calcola(){
     let stringaInizio = dataInizio.date.toLocaleDateString('it-IT', opzioniFormato);
     let stringaFine = dataFine.date.toLocaleDateString('it-IT', opzioniFormato);
 
-    // Generazione dei testi di avviso
     let testoAvviso = "";
     if (èCuspide) {
         testoAvviso += "<span class='avviso-nota'>⚠️ NB: Questa data si trova in una zona di cuspide (passaggio tra due segni).</span>";
@@ -203,7 +206,7 @@ function calcola(){
         testoAvviso += "<span class='avviso-nota'>ℹ️ Ora non inserita: calcolo stimato a metà giornata (ore 12:00 UTC). Per le date di transizione l'ora esatta è fondamentale.</span>";
     }
 
-    // Mostra il risultato sulla pagina
+    // Mostra il risultato a video
     document.getElementById("risultato").innerHTML =
     "<div class='badge'>" + s.nome + " " + s.glyph + "</div>" + 
     testoAvviso + "<br><br>" +
