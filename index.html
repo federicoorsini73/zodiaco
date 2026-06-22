@@ -7,8 +7,6 @@
 
 <title>Zodiaco</title>
 
-<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
-
 <style>
 
 html, body {
@@ -94,12 +92,11 @@ button:hover {
     color: #e2e8f0;
 }
 
-/* Stile sobrio per gli avvisi di nota e cuspide */
 .avviso-nota {
     display: block;
     margin-top: 10px;
     font-size: 14px;
-    color: #f59e0b; /* Colore ambra/arancione discreto */
+    color: #f59e0b;
     font-style: italic;
     line-height: 1.4;
 }
@@ -136,8 +133,39 @@ button:hover {
 </div>
 
 <script>
+/* ============================================================================
+   MOTORE ASTRONOMICO INTERNO - TOTALMENTE OFFLINE
+   ============================================================================ */
+const AstroMinimal = {
+    getJulianDays: function(date) {
+        return (date.getTime() / 86400000) - (date.getTimezoneOffset() / 1440) + 2440587.5 - 2451545.0;
+    },
+    getSunLongitude: function(date) {
+        let n = this.getJulianDays(date);
+        let g = (357.529 + 0.98560028 * n) % 360;
+        let q = (280.459 + 0.98564736 * n) % 360;
+        let L = (q + 1.915 * Math.sin(g * Math.PI / 180) + 0.020 * Math.sin(2 * g * Math.PI / 180)) % 360;
+        if (L < 0) L += 360;
+        return L;
+    },
+    searchLongitude: function(targetDeg, startDate, direction) {
+        let tempDate = new Date(startDate.getTime());
+        let stepDays = 0.25 * direction;
+        
+        for (let i = 0; i < 160; i++) {
+            let currentL = this.getSunLongitude(tempDate);
+            let diff = (currentL - targetDeg + 360) % 360;
+            if (diff > 180) diff -= 360;
+            
+            if (Math.abs(diff) < 0.05) {
+                return tempDate;
+            }
+            tempDate.setTime(tempDate.getTime() + stepDays * 86400000);
+        }
+        return tempDate;
+    }
+};
 
-// Database delle proprietà dei segni
 const infoSegni = {
     0:  { nome: "Ariete",      elem: "Fuoco",  mod: "Cardinale", opp: "Bilancia",   pianeta: "Marte",    glyph: "♈" },
     1:  { nome: "Toro",        elem: "Terra",  mod: "Fisso",     opp: "Scorpione",  pianeta: "Venere",   glyph: "♉" },
@@ -158,22 +186,23 @@ function calcola(){
     if(!dataVal) return;
 
     let oraInserita = document.getElementById("ora").value;
-    let oraVal = oraInserita || "12"; // Fallback a mezzogiorno se vuoto
+    let oraVal = oraInserita || "12";
     
-    // Crea l'oggetto data combinando i valori dell'utente
-    let dataLocale = new Date(`${dataVal}T${oraVal.padStart(2,'0')}:00:00`);
-    
-    // Converte la data per la libreria astronomica
-    let astronomiaData = Astronomy.MakeTime(dataLocale);
-    
-    // Calcola la posizione esatta del Sole in gradi (0-360)
-    let coords = Astronomy.EclipticGeoMoon(Astronomy.Body.Sun, astronomiaData);
-    let longitudineSolare = coords.elon; 
+    // SOLUZIONE ERRORE: Scomponiamo la stringa "AAAA-MM-GG" in numeri puliti
+    let partiData = dataVal.split("-");
+    let annoNum = parseInt(partiData[0], 10);
+    let meseNum = parseInt(partiData[1], 10) - 1; // I mesi in JS vanno da 0 a 11
+    let giornoNum = parseInt(partiData[2], 10);
+    let oraNum = parseInt(oraVal, 10);
 
-    // Trova l'indice del segno zodiacale (0-11)
+    // Genera un oggetto data nativo e sicuro al 100%
+    let dataLocale = new Date(annoNum, meseNum, giornoNum, oraNum, 0, 0);
+    
+    // Calcolo della longitudine
+    let longitudineSolare = AstroMinimal.getSunLongitude(dataLocale); 
+
     let indexSegno = Math.floor(longitudineSolare / 30);
     
-    // Calcolo della cuspide: controlla se il sole è a meno di 1 grado dall'inizio o dalla fine del segno
     let posizioneNelSegno = longitudineSolare % 30;
     let èCuspide = (posizioneNelSegno < 1.0) || (posizioneNelSegno > 29.0);
 
@@ -181,18 +210,16 @@ function calcola(){
     let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
     let anno = dataLocale.getFullYear();
     
-    // Calcolo dei passaggi esatti del sole per il periodo
     let inizioGrado = indexSegno * 30;
     let fineGrado = ((indexSegno + 1) * 30) % 360;
     
-    let dataInizio = Astronomy.SearchSunLongitude(inizioGrado, astronomiaData, -40);
-    let dataFine = Astronomy.SearchSunLongitude(fineGrado, astronomiaData, 40);
+    let dataInizio = AstroMinimal.searchLongitude(inizioGrado, dataLocale, -1);
+    let dataFine = AstroMinimal.searchLongitude(fineGrado, dataLocale, 1);
 
-    let opzioniFormato = { day: 'numeric', month: 'short', year: 'numeric' };
-    let stringaInizio = dataInizio.date.toLocaleDateString('it-IT', opzioniFormato);
-    let stringaFine = dataFine.date.toLocaleDateString('it-IT', opzioniFormato);
+    let opzioniFormato = { day: 'numeric', month: 'short' };
+    let stringaInizio = dataInizio.toLocaleDateString('it-IT', opzioniFormato);
+    let stringaFine = dataFine.toLocaleDateString('it-IT', opzioniFormato);
 
-    // Costruisce i testi di avviso in base alle scelte dell'utente
     let testoAvviso = "";
     if (èCuspide) {
         testoAvviso += "<span class='avviso-nota'>⚠️ NB: Questa data si trova in una zona di cuspide (passaggio tra due segni).</span>";
@@ -201,7 +228,6 @@ function calcola(){
         testoAvviso += "<span class='avviso-nota'>ℹ️ Ora non inserita: calcolo stimato a metà giornata (ore 12:00). Per le date di transizione l'ora esatta è fondamentale.</span>";
     }
 
-    // Stampa il risultato finale sulla pagina
     document.getElementById("risultato").innerHTML =
     "<div class='badge'>" + s.nome + " " + s.glyph + "</div>" + 
     testoAvviso + "<br><br>" +
