@@ -1,12 +1,5 @@
-<!--
-========================================================
-APP: ZODIACO
-VERSIONE: 4.1 - DARK THEME ONLY
-========================================================
--->
-
 <!DOCTYPE html>
-<html>
+<html lang="it">
 
 <head>
 <meta charset="UTF-8">
@@ -19,7 +12,7 @@ VERSIONE: 4.1 - DARK THEME ONLY
 html, body {
     height: 100%;
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
     background: #0f172a; /* DARK */
     color: #e2e8f0;
 }
@@ -61,6 +54,12 @@ input, select {
     text-align: center;
 }
 
+/* FIX: Rende visibile e bianca l'icona del calendario su Chrome/Safari/Edge */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
 button {
     width: 100%;
     margin-top: 16px;
@@ -70,6 +69,7 @@ button {
     border: none;
     background: #3b82f6;
     color: white;
+    cursor: pointer;
 }
 
 button:hover {
@@ -83,12 +83,14 @@ button:hover {
     line-height: 1.6;
 }
 
+/* MODIFICATO: Badge più grande e leggibile per il segno zodiacale */
 .badge {
     display: inline-block;
-    padding: 6px 10px;
-    border-radius: 10px;
+    padding: 10px 18px;
+    border-radius: 12px;
     background: #334155;
-    font-size: 14px;
+    font-size: 22px;
+    font-weight: bold;
     color: #e2e8f0;
 }
 
@@ -110,7 +112,6 @@ button:hover {
 
 <select id="ora">
     <option value="">--</option>
-
     <script>
         for (let i=0;i<24;i++){
             document.write(`<option>${String(i).padStart(2,'0')}</option>`);
@@ -140,44 +141,47 @@ if(!d) return;
 let data = new Date(d);
 let g = data.getDate();
 let m = data.getMonth()+1;
+let anno = data.getFullYear();
 
-let segno="", elem="", mod="", opp="", pianeta="", periodo="";
+let segno="", elem="", mod="", opp="", pianeta="", periodoText="";
 
 if((m==3 && g>=21)||(m==4 && g<=19)){
-segno="Ariete"; elem="Fuoco"; mod="Cardinale"; opp="Bilancia"; pianeta="Marte"; periodo="21 Mar - 19 Apr 2026";
+segno="Ariete"; elem="Fuoco"; mod="Cardinale"; opp="Bilancia"; pianeta="Marte"; periodoText=`21 Mar - 19 Apr ${anno}`;
 }
 else if((m==4 && g>=20)||(m==5 && g<=20)){
-segno="Toro"; elem="Terra"; mod="Fisso"; opp="Scorpione"; pianeta="Venere"; periodo="20 Apr - 20 Mag 2026";
+segno="Toro"; elem="Terra"; mod="Fisso"; opp="Scorpione"; pianeta="Venere"; periodoText=`20 Apr - 20 Mag ${anno}`;
 }
 else if((m==5 && g>=21)||(m==6 && g<=20)){
-segno="Gemelli"; elem="Aria"; mod="Mobile"; opp="Sagittario"; pianeta="Mercurio"; periodo="21 Mag - 20 Giu 2026";
+segno="Gemelli"; elem="Aria"; mod="Mobile"; opp="Sagittario"; pianeta="Mercurio"; periodoText=`21 Mag - 20 Giu ${anno}`;
 }
 else if((m==6 && g>=21)||(m==7 && g<=22)){
-segno="Cancro"; elem="Acqua"; mod="Cardinale"; opp="Capricorno"; pianeta="Luna"; periodo="21 Giu - 22 Lug 2026";
+segno="Cancro"; elem="Acqua"; mod="Cardinale"; opp="Capricorno"; pianeta="Luna"; periodoText=`21 Giu - 22 Lug ${anno}`;
 }
 else if((m==7 && g>=23)||(m==8 && g<=22)){
-segno="Leone"; elem="Fuoco"; mod="Fisso"; opp="Acquario"; pianeta="Sole"; periodo="22 Lug - 22 Ago 2026";
+segno="Leone"; elem="Fuoco"; mod="Fisso"; opp="Acquario"; pianeta="Sole"; periodoText=`22 Lug - 22 Ago ${anno}`;
 }
 else if((m==8 && g>=23)||(m==9 && g<=22)){
-segno="Vergine"; elem="Terra"; mod="Mobile"; opp="Pesci"; pianeta="Mercurio"; periodo="23 Ago - 22 Set 2026";
+segno="Vergine"; elem="Terra"; mod="Mobile"; opp="Pesci"; pianeta="Mercurio"; periodoText=`23 Ago - 22 Set ${anno}`;
 }
 else if((m==9 && g>=23)||(m==10 && g<=22)){
-segno="Bilancia"; elem="Aria"; mod="Cardinale"; opp="Ariete"; pianeta="Venere"; periodo="23 Set - 22 Ott 2026";
+segno="Bilancia"; elem="Aria"; mod="Cardinale"; opp="Ariete"; pianeta="Venere"; periodoText=`23 Set - 22 Ott ${anno}`;
 }
 else if((m==10 && g>=23)||(m==11 && g<=21)){
-segno="Scorpione"; elem="Acqua"; mod="Fisso"; opp="Toro"; pianeta="Plutone"; periodo="23 Ott - 21 Nov 2026";
+segno="Scorpione"; elem="Acqua"; mod="Fisso"; opp="Toro"; pianeta="Plutone"; periodoText=`23 Ott - 21 Nov ${anno}`;
 }
 else if((m==11 && g>=22)||(m==12 && g<=21)){
-segno="Sagittario"; elem="Fuoco"; mod="Mobile"; opp="Gemelli"; pianeta="Giove"; periodo="22 Nov - 21 Dic 2026";
+segno="Sagittario"; elem="Fuoco"; mod="Mobile"; opp="Gemelli"; pianeta="Giove"; periodoText=`22 Nov - 21 Dic ${anno}`;
 }
 else if((m==12 && g>=22)||(m==1 && g<=19)){
-segno="Capricorno"; elem="Terra"; mod="Cardinale"; opp="Cancro"; pianeta="Saturno"; periodo="21 Dic - 19 Gen 2026";
+let annoFine = (m == 12) ? anno + 1 : anno;
+let annoInizio = (m == 1) ? anno - 1 : anno;
+segno="Capricorno"; elem="Terra"; mod="Cardinale"; opp="Cancro"; pianeta="Saturno"; periodoText=`21 Dic ${annoInizio} - 19 Gen ${annoFine}`;
 }
 else if((m==1 && g>=20)||(m==2 && g<=18)){
-segno="Acquario"; elem="Aria"; mod="Fisso"; opp="Leone"; pianeta="Urano"; periodo="20 Gen - 18 Feb 2026";
+segno="Acquario"; elem="Aria"; mod="Fisso"; opp="Leone"; pianeta="Urano"; periodoText=`20 Gen - 18 Feb ${anno}`;
 }
 else{
-segno="Pesci"; elem="Acqua"; mod="Mobile"; opp="Vergine"; pianeta="Nettuno"; periodo="18 Feb - 20 Mar 2026";
+segno="Pesci"; elem="Acqua"; mod="Mobile"; opp="Vergine"; pianeta="Nettuno"; periodoText=`18 Feb - 20 Mar ${anno}`;
 }
 
 const glyph = {
@@ -197,7 +201,7 @@ const glyph = {
 
 document.getElementById("risultato").innerHTML =
 "<div class='badge'>"+segno+" "+glyph[segno]+"</div><br><br>"+
-"<b>Periodo:</b> "+periodo+"<br>"+
+"<b>Periodo:</b> "+periodoText+"<br>"+
 "<b>Elemento:</b> "+elem+"<br>"+
 "<b>Modalità:</b> "+mod+"<br>"+
 "<b>Pianeta dominante:</b> "+pianeta+"<br>"+
