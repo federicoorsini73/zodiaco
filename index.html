@@ -125,7 +125,7 @@ button:hover {
     </script>
 </select>
 
-<button onclick="calcola()">Calcola segno</button>
+<button onclick="calcolaSegnoZodiacale()">Calcola segno</button>
 
 <div id="risultato"></div>
 
@@ -134,44 +134,41 @@ button:hover {
 
 <script>
 
-// Formule Algoritmiche pure basate sullo standard JPL/NASA
-const AstroEngineNative = {
-    toJulian: function(date) {
+// Algoritmo astronomico geometrico puro (Nessuna dipendenza esterna)
+const AlgoritmoAstroNativo = {
+    ottieniGiornoGiuliano: function(date) {
         return (date.getTime() / 86400000) + 2440587.5;
     },
-    getTrueLongitude: function(date) {
-        let jd = this.toJulian(date);
+    ottieniLongitudineSolare: function(date) {
+        let jd = this.ottieniGiornoGiuliano(date);
         let T = (jd - 2451545.0) / 36525.0;
         
-        // Longitudine media geometrica del Sole
         let L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
-        // Anomalia media del Sole
         let M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T;
         
-        // Correzione dell'orbita (Equazione del centro)
         let C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(M * Math.PI / 180)
               + (0.019993 - 0.000101 * T) * Math.sin(2 * M * Math.PI / 180)
               + 0.000289 * Math.sin(3 * M * Math.PI / 180);
               
-        let longitudineVera = (L0 + C) % 360;
-        if (longitudineVera < 0) longitudineVera += 360;
-        return longitudineVera;
+        let longVera = (L0 + C) % 360;
+        if (longVera < 0) longVera += 360;
+        return longVera;
     },
-    findCuspDate: function(targetDeg, baseDate, direction) {
-        let tempDate = new Date(baseDate.getTime());
-        let step = direction * 60 * 60 * 1000; // Scansione oraria per massima precisione
+    trovaDataIncrocio: function(gradoTarget, dataRiferimento, direzione) {
+        let copiaData = new Date(dataRiferimento.getTime());
+        let incrementoOra = direzione * 60 * 60 * 1000; 
         
         for (let i = 0; i < 960; i++) {
-            let currentL = this.getTrueLongitude(tempDate);
-            let diff = (currentL - targetDeg + 360) % 360;
-            if (diff > 180) diff -= 360;
+            let longAttuale = this.ottieniLongitudineSolare(copiaData);
+            let scarto = (longAttuale - gradoTarget + 360) % 360;
+            if (scarto > 180) scarto -= 360;
             
-            if (Math.abs(diff) < 0.04) {
-                return tempDate;
+            if (Math.abs(scarto) < 0.04) {
+                return copiaData;
             }
-            tempDate.setTime(tempDate.getTime() + step);
+            copiaData.setTime(copiaData.getTime() + incrementoOra);
         }
-        return tempDate;
+        return copiaData;
     }
 };
 
@@ -190,24 +187,22 @@ const infoSegni = {
     11: { nome: "Pesci",       elem: "Acqua",  mod: "Mobile",    opp: "Vergine",    pianeta: "Nettuno",  glyph: "♓" }
 };
 
-function calcola(){
+function calcolaSegnoZodiacale(){
     let dataVal = document.getElementById("data").value;
     if(!dataVal) return;
 
     let oraInserita = document.getElementById("ora").value;
     let oraVal = oraInserita || "12";
     
-    let pezzi = dataVal.split("-");
-    let a = parseInt(pezzi[0], 10);
-    let m = parseInt(pezzi[1], 10) - 1;
-    let g = parseInt(pezzi[2], 10);
-    let h = parseInt(oraVal, 10);
+    let blocchi = dataVal.split("-");
+    let annoInput = parseInt(blocchi[0], 10);
+    let meseInput = parseInt(blocchi[1], 10) - 1;
+    let giornoInput = parseInt(blocchi[2], 10);
+    let oraInput = parseInt(oraVal, 10);
 
-    // Creiamo la data nativa pulita
-    let dataLocale = new Date(Date.UTC(a, m, g, h, 0, 0));
+    let dataUtcPura = new Date(Date.UTC(annoInput, meseInput, giornoInput, oraInput, 0, 0));
     
-    // Eseguiamo il calcolo con il nostro algoritmo sicuro
-    let longitudineSolare = AstroEngineNative.getTrueLongitude(dataLocale); 
+    let longitudineSolare = AlgoritmoAstroNativo.ottieniLongitudineSolare(dataUtcPura); 
 
     let indexSegno = Math.floor(longitudineSolare / 30);
     let posizioneNelSegno = longitudineSolare % 30;
@@ -216,12 +211,11 @@ function calcola(){
     let s = infoSegni[indexSegno];
     let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
     
-    // Calcolo dei limiti temporali esatti
     let inizioGrado = indexSegno * 30;
     let fineGrado = ((indexSegno + 1) * 30) % 360;
     
-    let dataInizio = AstroEngineNative.findCuspDate(inizioGrado, dataLocale, -1);
-    let dataFine = AstroEngineNative.findCuspDate(fineGrado, dataLocale, 1);
+    let dataInizio = AlgoritmoAstroNativo.trovaDataIncrocio(inizioGrado, dataUtcPura, -1);
+    let dataFine = AlgoritmoAstroNativo.trovaDataIncrocio(fineGrado, dataUtcPura, 1);
 
     let opzioniFormato = { day: 'numeric', month: 'short' };
     let stringaInizio = dataInizio.toLocaleDateString('it-IT', opzioniFormato);
@@ -238,7 +232,7 @@ function calcola(){
     document.getElementById("risultato").innerHTML =
     "<div class='badge'>" + s.nome + " " + s.glyph + "</div>" + 
     testoAvviso + "<br><br>" +
-    "<b>Periodo esatto (" + a + "):</b> dal " + stringaInizio + " al " + stringaFine + "<br>" +
+    "<b>Periodo esatto (" + annoInput + "):</b> dal " + stringaInizio + " al " + stringaFine + "<br>" +
     "<b>Elemento:</b> " + s.elem + "<br>" +
     "<b>Modalità:</b> " + s.mod + "<br>" +
     "<b>Pianeta dominante:</b> " + s.pianeta + "<br>" +
