@@ -7,13 +7,15 @@
 
 <title>Zodiaco</title>
 
+<script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+
 <style>
 
 html, body {
     height: 100%;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    background: #0f172a; /* DARK */
+    background: #0f172a;
     color: #e2e8f0;
 }
 
@@ -29,7 +31,7 @@ html, body {
 .card {
     width: 100%;
     max-width: 420px;
-    background: #1e293b; /* DARK CARD */
+    background: #1e293b;
     border-radius: 20px;
     padding: 28px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.5);
@@ -54,7 +56,6 @@ input, select {
     text-align: center;
 }
 
-/* FIX: Rende visibile e bianca l'icona del calendario su Chrome/Safari/Edge */
 input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(1);
     cursor: pointer;
@@ -83,7 +84,6 @@ button:hover {
     line-height: 1.6;
 }
 
-/* MODIFICATO: Badge più grande e leggibile per il segno zodiacale */
 .badge {
     display: inline-block;
     padding: 10px 18px;
@@ -92,6 +92,16 @@ button:hover {
     font-size: 22px;
     font-weight: bold;
     color: #e2e8f0;
+}
+
+/* Stile sobrio per gli avvisi di nota e cuspide */
+.avviso-nota {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #f59e0b; /* Colore ambra/arancione discreto */
+    font-style: italic;
+    line-height: 1.4;
 }
 
 </style>
@@ -109,7 +119,6 @@ button:hover {
 <input type="date" id="data">
 
 <p style="margin-top:14px;">Ora (opzionale)</p>
-
 <select id="ora">
     <option value="">--</option>
     <script>
@@ -128,85 +137,79 @@ button:hover {
 
 <script>
 
-/*
-========================================================
-FUNZIONE CALCOLO SEGNO
-========================================================
-*/
-function calcola(){
-
-let d = document.getElementById("data").value;
-if(!d) return;
-
-let data = new Date(d);
-let g = data.getDate();
-let m = data.getMonth()+1;
-let anno = data.getFullYear();
-
-let segno="", elem="", mod="", opp="", pianeta="", periodoText="";
-
-if((m==3 && g>=21)||(m==4 && g<=19)){
-segno="Ariete"; elem="Fuoco"; mod="Cardinale"; opp="Bilancia"; pianeta="Marte"; periodoText=`21 Mar - 19 Apr ${anno}`;
-}
-else if((m==4 && g>=20)||(m==5 && g<=20)){
-segno="Toro"; elem="Terra"; mod="Fisso"; opp="Scorpione"; pianeta="Venere"; periodoText=`20 Apr - 20 Mag ${anno}`;
-}
-else if((m==5 && g>=21)||(m==6 && g<=20)){
-segno="Gemelli"; elem="Aria"; mod="Mobile"; opp="Sagittario"; pianeta="Mercurio"; periodoText=`21 Mag - 20 Giu ${anno}`;
-}
-else if((m==6 && g>=21)||(m==7 && g<=22)){
-segno="Cancro"; elem="Acqua"; mod="Cardinale"; opp="Capricorno"; pianeta="Luna"; periodoText=`21 Giu - 22 Lug ${anno}`;
-}
-else if((m==7 && g>=23)||(m==8 && g<=22)){
-segno="Leone"; elem="Fuoco"; mod="Fisso"; opp="Acquario"; pianeta="Sole"; periodoText=`22 Lug - 22 Ago ${anno}`;
-}
-else if((m==8 && g>=23)||(m==9 && g<=22)){
-segno="Vergine"; elem="Terra"; mod="Mobile"; opp="Pesci"; pianeta="Mercurio"; periodoText=`23 Ago - 22 Set ${anno}`;
-}
-else if((m==9 && g>=23)||(m==10 && g<=22)){
-segno="Bilancia"; elem="Aria"; mod="Cardinale"; opp="Ariete"; pianeta="Venere"; periodoText=`23 Set - 22 Ott ${anno}`;
-}
-else if((m==10 && g>=23)||(m==11 && g<=21)){
-segno="Scorpione"; elem="Acqua"; mod="Fisso"; opp="Toro"; pianeta="Plutone"; periodoText=`23 Ott - 21 Nov ${anno}`;
-}
-else if((m==11 && g>=22)||(m==12 && g<=21)){
-segno="Sagittario"; elem="Fuoco"; mod="Mobile"; opp="Gemelli"; pianeta="Giove"; periodoText=`22 Nov - 21 Dic ${anno}`;
-}
-else if((m==12 && g>=22)||(m==1 && g<=19)){
-let annoFine = (m == 12) ? anno + 1 : anno;
-let annoInizio = (m == 1) ? anno - 1 : anno;
-segno="Capricorno"; elem="Terra"; mod="Cardinale"; opp="Cancro"; pianeta="Saturno"; periodoText=`21 Dic ${annoInizio} - 19 Gen ${annoFine}`;
-}
-else if((m==1 && g>=20)||(m==2 && g<=18)){
-segno="Acquario"; elem="Aria"; mod="Fisso"; opp="Leone"; pianeta="Urano"; periodoText=`20 Gen - 18 Feb ${anno}`;
-}
-else{
-segno="Pesci"; elem="Acqua"; mod="Mobile"; opp="Vergine"; pianeta="Nettuno"; periodoText=`18 Feb - 20 Mar ${anno}`;
-}
-
-const glyph = {
-"Ariete":"♈",
-"Toro":"♉",
-"Gemelli":"♊",
-"Cancro":"♋",
-"Leone":"♌",
-"Vergine":"♍",
-"Bilancia":"♎",
-"Scorpione":"♏",
-"Sagittario":"♐",
-"Capricorno":"♑",
-"Acquario":"♒",
-"Pesci":"♓"
+// Database delle proprietà dei segni
+const infoSegni = {
+    0:  { nome: "Ariete",      elem: "Fuoco",  mod: "Cardinale", opp: "Bilancia",   pianeta: "Marte",    glyph: "♈" },
+    1:  { nome: "Toro",        elem: "Terra",  mod: "Fisso",     opp: "Scorpione",  pianeta: "Venere",   glyph: "♉" },
+    2:  { nome: "Gemelli",     elem: "Aria",   mod: "Mobile",    opp: "Sagittario", pianeta: "Mercurio", glyph: "♊" },
+    3:  { nome: "Cancro",      elem: "Acqua",  mod: "Cardinale", opp: "Capricorno", pianeta: "Luna",     glyph: "♋" },
+    4:  { nome: "Leone",       elem: "Fuoco",  mod: "Fisso",     opp: "Acquario",   pianeta: "Sole",     glyph: "♌" },
+    5:  { nome: "Vergine",     elem: "Terra",  mod: "Mobile",    opp: "Pesci",      pianeta: "Mercurio", glyph: "♍" },
+    6:  { nome: "Bilancia",    elem: "Aria",   mod: "Cardinale", opp: "Ariete",     pianeta: "Venere",   glyph: "♎" },
+    7:  { nome: "Scorpione",   elem: "Acqua",  mod: "Fisso",     opp: "Toro",       pianeta: "Plutone",  glyph: "♏" },
+    8:  { nome: "Sagittario",  elem: "Fuoco",  mod: "Mobile",    opp: "Gemelli",    pianeta: "Giove",    glyph: "♐" },
+    9:  { nome: "Capricorno",  elem: "Terra",  mod: "Cardinale", opp: "Cancro",     pianeta: "Saturno",  glyph: "♑" },
+    10: { nome: "Acquario",    elem: "Aria",   mod: "Fisso",     opp: "Leone",      pianeta: "Urano",    glyph: "♒" },
+    11: { nome: "Pesci",       elem: "Acqua",  mod: "Mobile",    opp: "Vergine",    pianeta: "Nettuno",  glyph: "♓" }
 };
 
-document.getElementById("risultato").innerHTML =
-"<div class='badge'>"+segno+" "+glyph[segno]+"</div><br><br>"+
-"<b>Periodo:</b> "+periodoText+"<br>"+
-"<b>Elemento:</b> "+elem+"<br>"+
-"<b>Modalità:</b> "+mod+"<br>"+
-"<b>Pianeta dominante:</b> "+pianeta+"<br>"+
-"<b>Segno opposto:</b> "+opp+" "+glyph[opp];
+function calcola(){
+    let dataVal = document.getElementById("data").value;
+    if(!dataVal) return;
 
+    let oraInserita = document.getElementById("ora").value;
+    let oraVal = oraInserita || "12"; // Fallback a mezzogiorno se vuoto
+    
+    // Crea l'oggetto data combinando i valori dell'utente
+    let dataLocale = new Date(`${dataVal}T${oraVal.padStart(2,'0')}:00:00`);
+    
+    // Converte la data per la libreria astronomica
+    let astronomiaData = Astronomy.MakeTime(dataLocale);
+    
+    // Calcola la posizione esatta del Sole in gradi (0-360)
+    let coords = Astronomy.EclipticGeoMoon(Astronomy.Body.Sun, astronomiaData);
+    let longitudineSolare = coords.elon; 
+
+    // Trova l'indice del segno zodiacale (0-11)
+    let indexSegno = Math.floor(longitudineSolare / 30);
+    
+    // Calcolo della cuspide: controlla se il sole è a meno di 1 grado dall'inizio o dalla fine del segno
+    let posizioneNelSegno = longitudineSolare % 30;
+    let èCuspide = (posizioneNelSegno < 1.0) || (posizioneNelSegno > 29.0);
+
+    let s = infoSegni[indexSegno];
+    let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
+    let anno = dataLocale.getFullYear();
+    
+    // Calcolo dei passaggi esatti del sole per il periodo
+    let inizioGrado = indexSegno * 30;
+    let fineGrado = ((indexSegno + 1) * 30) % 360;
+    
+    let dataInizio = Astronomy.SearchSunLongitude(inizioGrado, astronomiaData, -40);
+    let dataFine = Astronomy.SearchSunLongitude(fineGrado, astronomiaData, 40);
+
+    let opzioniFormato = { day: 'numeric', month: 'short', year: 'numeric' };
+    let stringaInizio = dataInizio.date.toLocaleDateString('it-IT', opzioniFormato);
+    let stringaFine = dataFine.date.toLocaleDateString('it-IT', opzioniFormato);
+
+    // Costruisce i testi di avviso in base alle scelte dell'utente
+    let testoAvviso = "";
+    if (èCuspide) {
+        testoAvviso += "<span class='avviso-nota'>⚠️ NB: Questa data si trova in una zona di cuspide (passaggio tra due segni).</span>";
+    }
+    if (!oraInserita) {
+        testoAvviso += "<span class='avviso-nota'>ℹ️ Ora non inserita: calcolo stimato a metà giornata (ore 12:00). Per le date di transizione l'ora esatta è fondamentale.</span>";
+    }
+
+    // Stampa il risultato finale sulla pagina
+    document.getElementById("risultato").innerHTML =
+    "<div class='badge'>" + s.nome + " " + s.glyph + "</div>" + 
+    testoAvviso + "<br><br>" +
+    "<b>Periodo esatto (" + anno + "):</b> dal " + stringaInizio + " al " + stringaFine + "<br>" +
+    "<b>Elemento:</b> " + s.elem + "<br>" +
+    "<b>Modalità:</b> " + s.mod + "<br>" +
+    "<b>Pianeta dominante:</b> " + s.pianeta + "<br>" +
+    "<b>Segno opposto:</b> " + s.opp + " " + oppGlyph;
 }
 
 </script>
