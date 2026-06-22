@@ -9,51 +9,60 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      background: #f3f4f6;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: #111;
     }
 
     .app {
-      text-align: center;
-      background: #1e293b;
+      background: #ffffff;
       padding: 30px;
-      border-radius: 12px;
+      border-radius: 16px;
       width: 90%;
       max-width: 380px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      text-align: center;
     }
 
     h1 {
-      margin-bottom: 20px;
       font-size: 24px;
+      margin-bottom: 20px;
     }
 
-    input {
+    .label {
+      font-size: 13px;
+      color: #6b7280;
+      text-align: left;
+      margin: 10px 0 5px;
+    }
+
+    input, select {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 15px;
+      background: #fff;
+      outline: none;
     }
 
     button {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
+      margin-top: 15px;
       border: none;
-      border-radius: 6px;
-      background: #3b82f6;
+      border-radius: 10px;
+      background: #111;
       color: white;
       font-size: 16px;
       cursor: pointer;
     }
 
     button:hover {
-      background: #2563eb;
+      background: #000;
     }
 
     .result {
@@ -64,14 +73,16 @@
     }
 
     .badge {
-      font-size: 26px;
+      display: inline-block;
+      background: #f3f4f6;
+      padding: 6px 10px;
+      border-radius: 999px;
       font-weight: bold;
-      text-align: center;
       margin-bottom: 10px;
     }
 
     b {
-      color: #93c5fd;
+      color: #111;
     }
   </style>
 </head>
@@ -79,11 +90,17 @@
 <body>
 
   <div class="app">
-    <h1>♊ Zodiaco</h1>
+    <h1>🔮 Zodiaco</h1>
 
+    <div class="label">Data di nascita</div>
     <input type="date" id="birthdate" />
 
-    <button onclick="calcolaSegno()">Scopri il segno</button>
+    <div class="label">Ora (opzionale)</div>
+    <select id="ora">
+      <option value="--">--</option>
+    </select>
+
+    <button onclick="calcolaSegno()">Calcola segno</button>
 
     <div class="result" id="risultato"></div>
   </div>
@@ -111,7 +128,7 @@
 
       if ((mese == 1 && giorno >= 20) || (mese == 2 && giorno <= 18)) {
         segno = "Acquario";
-        periodo = "20 Gennaio - 18 Febbraio";
+        periodo = "20 Gen - 18 Feb";
         elem = "Aria";
         mod = "Fisso";
         pianeta = "Urano / Saturno";
@@ -119,7 +136,7 @@
       }
       else if ((mese == 2 && giorno >= 19) || (mese == 3 && giorno <= 20)) {
         segno = "Pesci";
-        periodo = "19 Febbraio - 20 Marzo";
+        periodo = "19 Feb - 20 Mar";
         elem = "Acqua";
         mod = "Mobile";
         pianeta = "Nettuno / Giove";
@@ -127,7 +144,7 @@
       }
       else if ((mese == 3 && giorno >= 21) || (mese == 4 && giorno <= 19)) {
         segno = "Ariete";
-        periodo = "21 Marzo - 19 Aprile";
+        periodo = "21 Mar - 19 Apr";
         elem = "Fuoco";
         mod = "Cardinale";
         pianeta = "Marte";
@@ -135,7 +152,7 @@
       }
       else if ((mese == 4 && giorno >= 20) || (mese == 5 && giorno <= 20)) {
         segno = "Toro";
-        periodo = "20 Aprile - 20 Maggio";
+        periodo = "20 Apr - 20 Mag";
         elem = "Terra";
         mod = "Fisso";
         pianeta = "Venere";
@@ -143,7 +160,7 @@
       }
       else if ((mese == 5 && giorno >= 21) || (mese == 6 && giorno <= 20)) {
         segno = "Gemelli";
-        periodo = "21 Maggio - 20 Giugno";
+        periodo = "21 Mag - 20 Giu";
         elem = "Aria";
         mod = "Mobile";
         pianeta = "Mercurio";
@@ -151,7 +168,7 @@
       }
       else if ((mese == 6 && giorno >= 21) || (mese == 7 && giorno <= 22)) {
         segno = "Cancro";
-        periodo = "21 Giugno - 22 Luglio";
+        periodo = "21 Giu - 22 Lug";
         elem = "Acqua";
         mod = "Cardinale";
         pianeta = "Luna";
@@ -159,7 +176,7 @@
       }
       else if ((mese == 7 && giorno >= 23) || (mese == 8 && giorno <= 22)) {
         segno = "Leone";
-        periodo = "23 Luglio - 22 Agosto";
+        periodo = "23 Lug - 22 Ago";
         elem = "Fuoco";
         mod = "Fisso";
         pianeta = "Sole";
@@ -167,7 +184,7 @@
       }
       else if ((mese == 8 && giorno >= 23) || (mese == 9 && giorno <= 22)) {
         segno = "Vergine";
-        periodo = "23 Agosto - 22 Settembre";
+        periodo = "23 Ago - 22 Set";
         elem = "Terra";
         mod = "Mobile";
         pianeta = "Mercurio";
@@ -175,7 +192,7 @@
       }
       else if ((mese == 9 && giorno >= 23) || (mese == 10 && giorno <= 22)) {
         segno = "Bilancia";
-        periodo = "23 Settembre - 22 Ottobre";
+        periodo = "23 Set - 22 Ott";
         elem = "Aria";
         mod = "Cardinale";
         pianeta = "Venere";
@@ -183,7 +200,7 @@
       }
       else if ((mese == 10 && giorno >= 23) || (mese == 11 && giorno <= 21)) {
         segno = "Scorpione";
-        periodo = "23 Ottobre - 21 Novembre";
+        periodo = "23 Ott - 21 Nov";
         elem = "Acqua";
         mod = "Fisso";
         pianeta = "Plutone / Marte";
@@ -191,7 +208,7 @@
       }
       else if ((mese == 11 && giorno >= 22) || (mese == 12 && giorno <= 21)) {
         segno = "Sagittario";
-        periodo = "22 Novembre - 21 Dicembre";
+        periodo = "22 Nov - 21 Dic";
         elem = "Fuoco";
         mod = "Mobile";
         pianeta = "Giove";
@@ -199,7 +216,7 @@
       }
       else {
         segno = "Capricorno";
-        periodo = "22 Dicembre - 19 Gennaio";
+        periodo = "22 Dic - 19 Gen";
         elem = "Terra";
         mod = "Cardinale";
         pianeta = "Saturno";
