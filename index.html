@@ -60,6 +60,13 @@
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .sign {
+      font-size: 26px;
+      margin-top: 8px;
+      display: block;
     }
   </style>
 </head>
@@ -79,6 +86,7 @@
   <script>
     function calcolaSegno() {
       const date = document.getElementById("birthdate").value;
+
       if (!date) {
         document.getElementById("result").innerText = "Inserisci una data";
         return;
@@ -89,21 +97,49 @@
       const mese = d.getMonth() + 1;
 
       let segno = "";
+      let descrizione = "";
 
-      if ((mese == 1 && giorno >= 20) || (mese == 2 && giorno <= 18)) segno = "Acquario";
-      else if ((mese == 2 && giorno >= 19) || (mese == 3 && giorno <= 20)) segno = "Pesci";
-      else if ((mese == 3 && giorno >= 21) || (mese == 4 && giorno <= 19)) segno = "Ariete";
-      else if ((mese == 4 && giorno >= 20) || (mese == 5 && giorno <= 20)) segno = "Toro";
-      else if ((mese == 5 && giorno >= 21) || (mese == 6 && giorno <= 20)) segno = "Gemelli";
-      else if ((mese == 6 && giorno >= 21) || (mese == 7 && giorno <= 22)) segno = "Cancro";
-      else if ((mese == 7 && giorno >= 23) || (mese == 8 && giorno <= 22)) segno = "Leone";
-      else if ((mese == 8 && giorno >= 23) || (mese == 9 && giorno <= 22)) segno = "Vergine";
-      else if ((mese == 9 && giorno >= 23) || (mese == 10 && giorno <= 22)) segno = "Bilancia";
-      else if ((mese == 10 && giorno >= 23) || (mese == 11 && giorno <= 21)) segno = "Scorpione";
-      else if ((mese == 11 && giorno >= 22) || (mese == 12 && giorno <= 21)) segno = "Sagittario";
-      else segno = "Capricorno";
+      if ((mese == 1 && giorno >= 20) || (mese == 2 && giorno <= 18)) {
+        segno = "Acquario"; descrizione = "Indipendente, originale, visionario";
+      }
+      else if ((mese == 2 && giorno >= 19) || (mese == 3 && giorno <= 20)) {
+        segno = "Pesci"; descrizione = "Sensibile, intuitivo, empatico";
+      }
+      else if ((mese == 3 && giorno >= 21) || (mese == 4 && giorno <= 19)) {
+        segno = "Ariete"; descrizione = "Energia, impulsività, leadership";
+      }
+      else if ((mese == 4 && giorno >= 20) || (mese == 5 && giorno <= 20)) {
+        segno = "Toro"; descrizione = "Stabilità, concretezza, pazienza";
+      }
+      else if ((mese == 5 && giorno >= 21) || (mese == 6 && giorno <= 20)) {
+        segno = "Gemelli"; descrizione = "Curioso, comunicativo, versatile";
+      }
+      else if ((mese == 6 && giorno >= 21) || (mese == 7 && giorno <= 22)) {
+        segno = "Cancro"; descrizione = "Emotivo, protettivo, affettuoso";
+      }
+      else if ((mese == 7 && giorno >= 23) || (mese == 8 && giorno <= 22)) {
+        segno = "Leone"; descrizione = "Carismatico, forte, creativo";
+      }
+      else if ((mese == 8 && giorno >= 23) || (mese == 9 && giorno <= 22)) {
+        segno = "Vergine"; descrizione = "Preciso, analitico, affidabile";
+      }
+      else if ((mese == 9 && giorno >= 23) || (mese == 10 && giorno <= 22)) {
+        segno = "Bilancia"; descrizione = "Equilibrato, sociale, armonioso";
+      }
+      else if ((mese == 10 && giorno >= 23) || (mese == 11 && giorno <= 21)) {
+        segno = "Scorpione"; descrizione = "Intenso, profondo, determinato";
+      }
+      else if ((mese == 11 && giorno >= 22) || (mese == 12 && giorno <= 21)) {
+        segno = "Sagittario"; descrizione = "Libero, ottimista, avventuroso";
+      }
+      else {
+        segno = "Capricorno"; descrizione = "Ambizioso, disciplinato, concreto";
+      }
 
-      document.getElementById("result").innerText = "Il tuo segno è: " + segno;
+      document.getElementById("result").innerHTML =
+        "Il tuo segno è:<br>" +
+        "<span class='sign'>" + segno + "</span><br>" +
+        "<div style='font-weight:normal; margin-top:8px'>" + descrizione + "</div>";
     }
   </script>
 
