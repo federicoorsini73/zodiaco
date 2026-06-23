@@ -1,7 +1,7 @@
 {
   "name": "Zodiaco App",
   "short_name": "Zodiaco",
-  "start_url": "/zodiaco/index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
