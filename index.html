@@ -6,6 +6,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>Zodiaco</title>
+    
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#0f172a">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2591/2591421.png">
 
 <style>
 
@@ -153,22 +158,6 @@ const AlgoritmoAstroNativo = {
         let longVera = (L0 + C) % 360;
         if (longVera < 0) longVera += 360;
         return longVera;
-    },
-    trovaDataIncrocio: function(gradoTarget, dataRiferimento, direzione) {
-        let copiaData = new Date(dataRiferimento.getTime());
-        let incrementoOra = direzione * 60 * 60 * 1000; 
-        
-        for (let i = 0; i < 960; i++) {
-            let longAttuale = this.ottieniLongitudineSolare(copiaData);
-            let scarto = (longAttuale - gradoTarget + 360) % 360;
-            if (scarto > 180) scarto -= 360;
-            
-            if (Math.abs(scarto) < 0.04) {
-                return copiaData;
-            }
-            copiaData.setTime(copiaData.getTime() + incrementoOra);
-        }
-        return copiaData;
     }
 };
 
@@ -211,15 +200,16 @@ function calcolaSegnoZodiacale(){
     let s = infoSegni[indexSegno];
     let oppGlyph = infoSegni[(indexSegno + 6) % 12].glyph;
     
-    let inizioGrado = indexSegno * 30;
-    let fineGrado = ((indexSegno + 1) * 30) % 360;
+    // Calcolo corretto dei range dei periodi astrologici standard
+    let inizioMese = [20, 19, 21, 20, 21, 21, 23, 23, 23, 23, 22, 22];
+    let mesiNomi = ["gen", "feb", "mar", "apr", "mag", "giu", "lug", "ago", "set", "ott", "nov", "dic"];
     
-    let dataInizio = AlgoritmoAstroNativo.trovaDataIncrocio(inizioGrado, dataUtcPura, -1);
-    let dataFine = AlgoritmoAstroNativo.trovaDataIncrocio(fineGrado, dataUtcPura, 1);
-
-    let opzioniFormato = { day: 'numeric', month: 'short' };
-    let stringaInizio = dataInizio.toLocaleDateString('it-IT', opzioniFormato);
-    let stringaFine = dataFine.toLocaleDateString('it-IT', opzioniFormato);
+    let mInizio = indexSegno + 2; 
+    if (mInizio > 11) mInizio -= 12;
+    let mFine = (mInizio + 1) % 12;
+    
+    let stringaInizio = inizioMese[mInizio] + " " + mesiNomi[mInizio];
+    let stringaFine = (inizioMese[mFine] - 1) + " " + mesiNomi[mFine];
 
     let testoAvviso = "";
     if (èCuspide) {
@@ -230,8 +220,8 @@ function calcolaSegnoZodiacale(){
     }
 
     document.getElementById("risultato").innerHTML =
-    "<div class='badge'>" + s.nome + " " + s.glyph + "</div>" + 
-    testoAvviso + "<br><br>" +
+    "<div style='text-align: center; margin-bottom: 15px;'><div class='badge'>" + s.nome + " " + s.glyph + "</div></div>" + 
+    testoAvviso + "<br>" +
     "<b>Periodo esatto (" + annoInput + "):</b> dal " + stringaInizio + " al " + stringaFine + "<br>" +
     "<b>Elemento:</b> " + s.elem + "<br>" +
     "<b>Modalità:</b> " + s.mod + "<br>" +
@@ -240,6 +230,12 @@ function calcolaSegnoZodiacale(){
 }
 
 </script>
-
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log('PWA: Attiva!'))
+    .catch((err) => console.log('PWA: Errore', err));
+}
+</script>
 </body>
 </html>
