@@ -1,19 +1,19 @@
 {
   "name": "Zodiaco App",
   "short_name": "Zodiaco",
-  "start_url": "index.html",
+  "start_url": "/zodiaco/index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://img.icons8.com/fluent/192/purple-crystal.png",
-      "sizes": "192x192",
+      "src": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f52e.png",
+      "sizes": "72x72",
       "type": "image/png"
     },
     {
-      "src": "https://img.icons8.com/fluent/512/purple-crystal.png",
+      "src": "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/512x512/1f52e.png",
       "sizes": "512x512",
       "type": "image/png"
     }
