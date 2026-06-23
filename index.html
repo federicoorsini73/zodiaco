@@ -232,7 +232,7 @@ function calcolaSegnoZodiacale(){
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
+  navigator.serviceWorker.register('/zodiaco/sw.js')
     .then(() => console.log('PWA: Attiva!'))
     .catch((err) => console.log('PWA: Errore', err));
 }
